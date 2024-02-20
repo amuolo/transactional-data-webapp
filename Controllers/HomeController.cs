@@ -23,21 +23,6 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult Information()
-    {
-        return View();
-    }
-
-    public IActionResult Audit()
-    {
-        return View();
-    }
-
-    public IActionResult Import()
-    {
-        return View();
-    }
-
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

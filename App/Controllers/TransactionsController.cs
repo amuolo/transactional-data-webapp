@@ -48,16 +48,35 @@ public class TransactionsController : Controller
     public async Task<IActionResult> Create(
         [Bind(nameof(Transaction.Id)+","+nameof(Transaction.TransactionDate)+","+nameof(Transaction.SettlementDate)
          +","+nameof(Transaction.User)+","+nameof(Transaction.Currency)+","+nameof(Transaction.Type)+","+nameof(Transaction.Amount))] 
-        Transaction transactionalData)
+        Transaction transaction)
     {
         if (ModelState.IsValid)
         {
-            transactionalData.Id = Guid.NewGuid();
-            _dbContext.Add(transactionalData);
-            await _dbContext.SaveChangesAsync();
+            await CommitAsync(transaction);
             return RedirectToAction(nameof(Index));
         }
-        return View(transactionalData);
+        return View(transaction);
+    }
+
+    [HttpPost]
+    public async Task Create(string transactionDate, string user, Currency currency, TransactionType type, decimal amount)
+    {
+        var transaction = new Transaction
+        {
+            TransactionDate = DateTime.Parse(transactionDate),
+            Currency = currency,
+            Type = type,
+            Amount = amount
+        };
+
+        await CommitAsync(transaction);
+    }
+
+    private async Task CommitAsync(Transaction transaction)
+    {
+        transaction.Id = Guid.NewGuid();
+        _dbContext.Add(transaction);
+        await _dbContext.SaveChangesAsync();
     }
 
     // GET: TransactionalData/Edit/5
