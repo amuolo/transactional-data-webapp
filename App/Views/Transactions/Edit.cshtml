@@ -1,4 +1,5 @@
-﻿@model Model.Transaction
+﻿@using Model
+@model Model.Transaction
 
 @{
     ViewData["Title"] = "Edit";
@@ -30,12 +31,16 @@
             </div>
             <div class="form-group">
                 <label asp-for="Currency" class="control-label"></label>
-                <input asp-for="Currency" class="form-control" />
+                <select asp-for="Currency" class="form-control" asp-items="Html.GetEnumSelectList<Currency>()">
+                    <option selected="selected" value="">Please select</option>
+                </select>
                 <span asp-validation-for="Currency" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Type" class="control-label"></label>
-                <select asp-for="Type" class="form-control"></select>
+                <select asp-for="Type" class="form-control" asp-items="Html.GetEnumSelectList<TransactionType>()">
+                    <option selected="selected" value="">Please select</option>
+                </select>
                 <span asp-validation-for="Type" class="text-danger"></span>
             </div>
             <div class="form-group">

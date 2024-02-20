@@ -10,4 +10,6 @@ public class DbCatalogContext : DbContext
     }
 
     public DbSet<Model.Transaction> TransactionalData { get; set; } = default!;
+
+    public DbSet<Model.ActivityLog> ActivityLogs { get; set; } = default!;
 }

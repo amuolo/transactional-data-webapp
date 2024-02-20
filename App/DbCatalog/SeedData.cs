@@ -10,12 +10,17 @@ public static class SeedData
     {
         using (var context = new DbCatalogContext(serviceProvider.GetRequiredService<DbContextOptions<DbCatalogContext>>()))
         {
-            if (context.TransactionalData.Any())
-                return;
+            if (!context.TransactionalData.Any())
+            {
+                context.TransactionalData.AddRange(Initialization.TransactionalData());
+                context.SaveChanges();
+            }
 
-            context.TransactionalData.AddRange(Initialization.TransactionalData());
-
-            context.SaveChanges();
+            if (!context.ActivityLogs.Any())
+            {
+                context.ActivityLogs.AddRange(Initialization.ActivityLog());
+                context.SaveChanges();
+            }
         }
     }
 }

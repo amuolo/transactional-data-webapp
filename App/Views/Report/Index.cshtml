@@ -1,14 +1,21 @@
 ﻿@using Model
 
 @{
-    ViewData["Title"] = "Report";
+    ViewData["Title"] = "Account Transaction Report";
 
     //var transactionsById = (Dictionary<string, TransactionalData>)ViewData["TransactionalData"]!;
 }
 
-<h2>Report</h2>
+<h5> 
+    <a asp-area="" asp-controller="Report" asp-action="Earnings">Earnings</a> 
+    <a asp-area="" asp-controller="Report" asp-action="Expenses">Expenses</a>
+</h5>
 
-<p>Hello from our View Template!</p>
+<hr />
+
+<h6> @ViewData["Title"] </h6>
+
+<p> Summary </p>
 
 <ul>
     @{

@@ -8,9 +8,9 @@ public record ActivityLog()
     public Guid Id { get; set; }
 
     [DataType(DataType.Date)]
-    public DateTime Date { get; } = DateTime.UtcNow;
+    public DateTime Date { get; set; } = DateTime.UtcNow;
 
-    public string User { get; } = string.Empty;
+    public string User { get; set; } = string.Empty;
 
     public string Activity { get; set; } = string.Empty;
 }

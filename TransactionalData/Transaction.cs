@@ -21,6 +21,7 @@ public record Transaction()
     [DataType(DataType.Currency)]
     public string Currency { get; set; } = "CHF";
 
+    [EnumDataType(typeof(TransactionType))]
     public TransactionType Type { get; set; }
 
     [Column(TypeName = "decimal(18,8)")]

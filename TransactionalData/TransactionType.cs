@@ -16,5 +16,7 @@ public enum TransactionType : byte
 
     Rent, 
 
-    Mortgage
+    Mortgage, 
+
+    Income
 }

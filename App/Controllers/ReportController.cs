@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Text.Encodings.Web;
 
 namespace App.Controllers;
 
@@ -16,14 +15,13 @@ public class ReportController : Controller
         return View();
     }
 
-    public string Values()
+    public IActionResult Earnings()
     {
-        return "My values";
+        return View();
     }
 
-    // localhost:{PORT}/TransactionalData/Value?id=Rick
-    public string Value(string id)
+    public IActionResult Expenses()
     {
-        return HtmlEncoder.Default.Encode($"Transaction with id {id}");
+        return View();
     }
 }
