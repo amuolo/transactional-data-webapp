@@ -6,11 +6,11 @@ public static class Initialization
     {
         return new Transaction[]
         {
-            new() { User = "John", TransactionDate = DateTime.Parse("2024/02/18"), Currency = "CHF", Type = TransactionType.Leisure, Amount = -10 },
-            new() { User = "Bob", TransactionDate = DateTime.Parse("2024/02/19"), Currency = "CHF", Type = TransactionType.Leisure, Amount = -10 },
+            new() { User = "John", TransactionDate = DateTime.Parse("2024/02/18"), Currency = Currency.CHF, Type = TransactionType.Leisure, Amount = -10 },
+            new() { User = "Bob", TransactionDate = DateTime.Parse("2024/02/19"), Currency = Currency.CHF, Type = TransactionType.Leisure, Amount = -10 },
             
-            new() { User = "John", TransactionDate = DateTime.Parse("2024/02/01"), Currency = "CHF", Type = TransactionType.Income, Amount = +10 },
-            new() { User = "Bob", TransactionDate = DateTime.Parse("2024/02/01"), Currency = "CHF", Type = TransactionType.Income, Amount = +10 },
+            new() { User = "John", TransactionDate = DateTime.Parse("2024/02/01"), Currency = Currency.CHF, Type = TransactionType.Income, Amount = +10 },
+            new() { User = "Bob", TransactionDate = DateTime.Parse("2024/02/01"), Currency = Currency.CHF, Type = TransactionType.Income, Amount = +10 },
         };
     }
 

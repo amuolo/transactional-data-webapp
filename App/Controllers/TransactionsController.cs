@@ -45,7 +45,10 @@ public class TransactionsController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,User,Value")] Transaction transactionalData)
+    public async Task<IActionResult> Create(
+        [Bind(nameof(Transaction.Id)+","+nameof(Transaction.TransactionDate)+","+nameof(Transaction.SettlementDate)
+         +","+nameof(Transaction.User)+","+nameof(Transaction.Currency)+","+nameof(Transaction.Type)+","+nameof(Transaction.Amount))] 
+        Transaction transactionalData)
     {
         if (ModelState.IsValid)
         {
@@ -76,7 +79,10 @@ public class TransactionsController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("Id,User,Value")] Transaction transactionalData)
+    public async Task<IActionResult> Edit(Guid id,
+        [Bind(nameof(Transaction.Id)+","+nameof(Transaction.TransactionDate)+","+nameof(Transaction.SettlementDate)
+         +","+nameof(Transaction.User)+","+nameof(Transaction.Currency)+","+nameof(Transaction.Type)+","+nameof(Transaction.Amount))] 
+        Transaction transactionalData)
     {
         if (id != transactionalData.Id)
             return NotFound();
