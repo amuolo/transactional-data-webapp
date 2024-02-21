@@ -9,6 +9,8 @@ public class TransactionsController : Controller
 {
     private readonly DbCatalogContext _dbContext;
 
+    private List<Transaction>? TransactionsCache { get; set; }
+
     public TransactionsController(DbCatalogContext dbContext)
     {
         _dbContext = dbContext;
@@ -17,7 +19,14 @@ public class TransactionsController : Controller
     // GET: Transactions
     public async Task<IActionResult> Index()
     {
-        return View(await _dbContext.TransactionalData.ToListAsync());
+        await InitializeCacheAsync();
+        return View(TransactionsCache);
+    }
+
+    private async Task InitializeCacheAsync()
+    {
+        if (TransactionsCache is null)
+            TransactionsCache = await _dbContext.TransactionalData.ToListAsync();
     }
 
     // GET: Transactions/Details/5
@@ -38,17 +47,17 @@ public class TransactionsController : Controller
     public async Task<string> Create(string transactionDate, string user, Currency currency, TransactionType type, string amount)
     {
         if (!DateTime.TryParse(transactionDate, out var date))
-            return await CommitLog("Failed to parse value " + nameof(Transaction.TransactionDate));
+            return await CommitLogAsync("Failed to parse value " + nameof(Transaction.TransactionDate));
 
         if (!decimal.TryParse(amount, out var decimalAmount))
-            return await CommitLog("Failed to parse value: " + nameof(Transaction.Amount));
+            return await CommitLogAsync("Failed to parse value: " + nameof(Transaction.Amount));
 
         if (date > DateTime.UtcNow)
-            return await CommitLog("Error: Submission of future transactions is forbidden.");
+            return await CommitLogAsync("Error: Submission of future transactions is forbidden.");
 
         if (decimalAmount < 0 && type is TransactionType.Income ||
             decimalAmount >= 0 && type is not TransactionType.Income)
-            return await CommitLog("Error: " + nameof(TransactionType) + " selected is not compatible with " + nameof(Transaction.Amount));
+            return await CommitLogAsync("Error: " + nameof(TransactionType) + " selected is not compatible with " + nameof(Transaction.Amount));
 
         var transaction = new Transaction
         {
@@ -59,18 +68,25 @@ public class TransactionsController : Controller
             Amount = decimalAmount
         };
 
-        transaction.Id = Guid.NewGuid();
-        _dbContext.Add(transaction);
-        await _dbContext.SaveChangesAsync();
-        return "Done!";        
+        await CommitTransactionAsync(transaction);
+        return "Transaction submission completed successfully!";        
     }
 
-    private async Task<string> CommitLog(string msg, string? user = default)
+    private async Task<string> CommitLogAsync(string msg, string? user = default)
     {
         var log = new ActivityLog() { User = user?? "", Activity = msg };
         _dbContext.Add(log);
         await _dbContext.SaveChangesAsync();
         return msg;
+    }
+
+    private async Task CommitTransactionAsync(Transaction transaction)
+    {
+        transaction.Id = Guid.NewGuid();
+        _dbContext.Add(transaction);
+        await _dbContext.SaveChangesAsync();
+        await InitializeCacheAsync();
+        TransactionsCache?.Add(transaction);
     }
 
     // GET: Transactions/Edit/5

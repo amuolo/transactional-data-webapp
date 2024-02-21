@@ -1,5 +1,6 @@
 ﻿using App.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace App.Controllers;
 
@@ -12,8 +13,8 @@ public class LogsController : Controller
         _dbContext = dbContext;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        return View(await _dbContext.ActivityLogs.ToListAsync());
     }
 }
