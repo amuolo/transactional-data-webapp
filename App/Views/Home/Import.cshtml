@@ -3,6 +3,7 @@
 
 @{
     ViewData["Title"] = "Import";
+    //data: $('#creationForm').serializeArray(),
 }
 
 <h3> Process New Transaction </h3>
@@ -11,9 +12,34 @@
 
 <p> Fill in the following form: </p>
 
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"> </script>
+
+<script type="text/javascript">
+$(document).ready(function () {
+    $('#createButton').click(function () {
+
+        $.ajax({
+            type: "POST",
+            url: "/Transactions/Create",
+            data: $('#creationForm').serializeArray(),
+            dataType: "text",
+            async: true, 
+            cache: false,
+            success: function (msg) {
+                document.getElementById("log").innerHTML = msg;
+            },
+            error: function (req, status, error) {
+                document.getElementById("log").innerHTML = error";
+            }
+        });
+    });
+});
+</script>
+
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form id="creationForm">
+            <!-- asp-controller="Transactions" asp-action="Create" method="POST" -->
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="TransactionDate" class="control-label"></label>
@@ -45,8 +71,12 @@
                 <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="button" value="Create" id="createButton" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
+
+<hr />
+
+<div id="log"> </div>

@@ -14,13 +14,13 @@ public class TransactionsController : Controller
         _dbContext = dbContext;
     }
 
-    // GET: TransactionalData
+    // GET: Transactions
     public async Task<IActionResult> Index()
     {
         return View(await _dbContext.TransactionalData.ToListAsync());
     }
 
-    // GET: TransactionalData/Details/5
+    // GET: Transactions/Details/5
     public async Task<IActionResult> Details(Guid? id)
     {
         if (id is null)
@@ -34,52 +34,46 @@ public class TransactionsController : Controller
         return View(transactionalData);
     }
 
-    // GET: TransactionalData/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // POST: TransactionalData/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(
-        [Bind(nameof(Transaction.Id)+","+nameof(Transaction.TransactionDate)+","+nameof(Transaction.SettlementDate)
-         +","+nameof(Transaction.User)+","+nameof(Transaction.Currency)+","+nameof(Transaction.Type)+","+nameof(Transaction.Amount))] 
-        Transaction transaction)
+    public async Task<string> Create(string transactionDate, string user, Currency currency, TransactionType type, string amount)
     {
-        if (ModelState.IsValid)
-        {
-            await CommitAsync(transaction);
-            return RedirectToAction(nameof(Index));
-        }
-        return View(transaction);
-    }
+        if (!DateTime.TryParse(transactionDate, out var date))
+            return await CommitLog("Failed to parse value " + nameof(Transaction.TransactionDate));
 
-    [HttpPost]
-    public async Task Create(string transactionDate, string user, Currency currency, TransactionType type, decimal amount)
-    {
+        if (!decimal.TryParse(amount, out var decimalAmount))
+            return await CommitLog("Failed to parse value: " + nameof(Transaction.Amount));
+
+        if (date > DateTime.UtcNow)
+            return await CommitLog("Error: Submission of future transactions is forbidden.");
+
+        if (decimalAmount < 0 && type is TransactionType.Income ||
+            decimalAmount >= 0 && type is not TransactionType.Income)
+            return await CommitLog("Error: " + nameof(TransactionType) + " selected is not compatible with " + nameof(Transaction.Amount));
+
         var transaction = new Transaction
         {
-            TransactionDate = DateTime.Parse(transactionDate),
+            TransactionDate = date,
+            User = user,
             Currency = currency,
             Type = type,
-            Amount = amount
+            Amount = decimalAmount
         };
 
-        await CommitAsync(transaction);
-    }
-
-    private async Task CommitAsync(Transaction transaction)
-    {
         transaction.Id = Guid.NewGuid();
         _dbContext.Add(transaction);
         await _dbContext.SaveChangesAsync();
+        return "Done!";        
     }
 
-    // GET: TransactionalData/Edit/5
+    private async Task<string> CommitLog(string msg, string? user = default)
+    {
+        var log = new ActivityLog() { User = user?? "", Activity = msg };
+        _dbContext.Add(log);
+        await _dbContext.SaveChangesAsync();
+        return msg;
+    }
+
+    // GET: Transactions/Edit/5
     public async Task<IActionResult> Edit(Guid? id)
     {
         if (id is null)
@@ -93,7 +87,7 @@ public class TransactionsController : Controller
         return View(transactionalData);
     }
 
-    // POST: TransactionalData/Edit/5
+    // POST: Transactions/Edit/5
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
@@ -129,7 +123,7 @@ public class TransactionsController : Controller
         return View(transactionalData);
     }
 
-    // GET: TransactionalData/Delete/5
+    // GET: Transactions/Delete/5
     public async Task<IActionResult> Delete(Guid? id)
     {
         if (id is null)
@@ -143,7 +137,7 @@ public class TransactionsController : Controller
         return View(transactionalData);
     }
 
-    // POST: TransactionalData/Delete/5
+    // POST: Transactions/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)

@@ -5,7 +5,7 @@ namespace Model;
 public record ActivityLog()
 {
     [Key]
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [DataType(DataType.Date)]
     public DateTime Date { get; set; } = DateTime.UtcNow;
