@@ -26,7 +26,7 @@ public class TransactionsController : Controller
     private async Task InitializeCacheAsync()
     {
         if (TransactionsCache is null)
-            TransactionsCache = await _dbContext.TransactionalData.ToListAsync();
+            TransactionsCache = await _dbContext.TransactionalData.OrderByDescending(x => x.TransactionDate).ToListAsync();
     }
 
     // GET: Transactions/Details/5
@@ -47,17 +47,17 @@ public class TransactionsController : Controller
     public async Task<string> Create(string transactionDate, string user, Currency currency, TransactionType type, string amount)
     {
         if (!DateTime.TryParse(transactionDate, out var date))
-            return await CommitLogAsync("Failed to parse value " + nameof(Transaction.TransactionDate));
+            return await CommitLogAsync("Failed to parse value " + nameof(Transaction.TransactionDate), user);
 
         if (!decimal.TryParse(amount, out var decimalAmount))
-            return await CommitLogAsync("Failed to parse value: " + nameof(Transaction.Amount));
+            return await CommitLogAsync("Failed to parse value: " + nameof(Transaction.Amount), user);
 
         if (date > DateTime.UtcNow)
-            return await CommitLogAsync("Error: Submission of future transactions is forbidden.");
+            return await CommitLogAsync("Error: Submission of future transactions is forbidden.", user);
 
         if (decimalAmount < 0 && type is TransactionType.Income ||
             decimalAmount >= 0 && type is not TransactionType.Income)
-            return await CommitLogAsync("Error: " + nameof(TransactionType) + " selected is not compatible with " + nameof(Transaction.Amount));
+            return await CommitLogAsync("Error: " + nameof(TransactionType) + " selected is not compatible with " + nameof(Transaction.Amount), user);
 
         var transaction = new Transaction
         {
@@ -69,10 +69,10 @@ public class TransactionsController : Controller
         };
 
         await CommitTransactionAsync(transaction);
-        return "Transaction submission completed successfully!";        
+        return await CommitLogAsync("Transaction submitted successfully!", user);        
     }
 
-    private async Task<string> CommitLogAsync(string msg, string? user = default)
+    private async Task<string> CommitLogAsync(string msg, string? user)
     {
         var log = new ActivityLog() { User = user?? "", Activity = msg };
         _dbContext.Add(log);

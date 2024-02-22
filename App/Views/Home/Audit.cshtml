@@ -1,12 +1,12 @@
 ﻿@using Model
 
+@model ActivityLog
+
 @{
     ViewData["Title"] = "Audit Trail";
 }
 
 <h3> @ViewData["Title"] </h3>
-
-<hr />
 
 <p> List of Activities </p>
 
@@ -16,19 +16,53 @@
         $.ajax({
             type: "GET",
             url: "/Logs/List",
-            //data: $('#creationForm').serializeArray(),
-            dataType: "text",
+            dataType: "json",
             async: true,
             cache: false,
-            success: function (msg) {
-                document.getElementById("log").innerHTML = msg;
+            success: function (data) {
+                var result = "";
+                $.each(data, function (id, item) {
+                    const table = document.getElementById("tableBody");
+                    let row = table.insertRow();
+                    let date = row.insertCell(0);
+                    date.innerHTML = item.Date;
+                    let user = row.insertCell(1);
+                    user.innerHTML = item.User;
+                    let activity = row.insertCell(2);
+                    activity.innerHTML = item.Activity;
+                    result += '<b>Date : </b>' + item.Date + '<br/>' +
+                        '<b> User :</b>' + item.User + '<br/>' +
+                        '<b> Activity :</b>' + item.Activity + '<hr/>';
+                });
+                document.getElementById("logs").innerHTML = result;
             },
             error: function (req, status, error) {
-                document.getElementById("log").innerHTML = error;
+                alert('Failed to retrieve logs.');
             }
         });
     });
 </script>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Activity)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
+
+<div id="logs"></div>
+
 
 
 

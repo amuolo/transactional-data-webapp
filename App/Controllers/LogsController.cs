@@ -2,12 +2,16 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Model;
+using System.Text.Json;
 
 namespace App.Controllers;
 
 public class LogsController : Controller
 {
     private readonly DbCatalogContext _dbContext;
+
+    private async Task<List<ActivityLog>> QueryAsync() 
+        => await _dbContext.ActivityLogs.OrderByDescending(x => x.Date).ToListAsync();
 
     public LogsController(DbCatalogContext dbContext)
     {
@@ -17,12 +21,12 @@ public class LogsController : Controller
     // GET: Transactions
     public async Task<IActionResult> Index()
     {
-        return View(await _dbContext.ActivityLogs.ToListAsync());
+        return View(await QueryAsync());
     }
 
     // GET: Transactions/List
-    public async Task<List<ActivityLog>> List()
+    public async Task<JsonResult> List()
     {
-        return await _dbContext.ActivityLogs.ToListAsync();
+        return Json(await QueryAsync(), JsonSerializerOptions.Default);
     }
 }
