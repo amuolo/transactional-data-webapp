@@ -1,4 +1,5 @@
 ﻿@using Model
+@using Model.Extensions
 @model Transaction
 
 @{
@@ -20,6 +21,12 @@
 <br />
 
 <script type="text/javascript">
+    $(document).ready(function () {
+        setOverview();
+    })
+</script>
+
+<script type="text/javascript">
     function setOverview() {
         $.ajax({
             type: "GET",
@@ -35,14 +42,10 @@
                 table.innerHTML = "";
                 $.each(data, function (id, item) {
                     let row = table.insertRow();
-                    let user = row.insertCell(0);
-                    user.innerHTML = item.User;
-                    let earnings = row.insertCell(1);
-                    earnings.innerHTML = item.Earnings;
-                    let expenses = row.insertCell(2);
-                    expenses.innerHTML = item.Expenses;
-                    let balance = row.insertCell(3);
-                    balance.innerHTML = item.Balance;
+                    row.insertCell(0).innerHTML = item.User;
+                    row.insertCell(1).innerHTML = item.Earnings;
+                    row.insertCell(2).innerHTML = item.Expenses;
+                    row.insertCell(3).innerHTML = item.Balance;
                 });
             },
             error: function (req, status, error) {
@@ -56,14 +59,16 @@
         document.getElementById("fullReportTable").hidden = false;
         const table = document.getElementById("fullReportTableBody");
         table.innerHTML = "";
+        const currencies = @(Html.EnumToString<Currency>());
+        const types = @(Html.EnumToString<TransactionType>());
         $.each(data, function (id, item) {
             let row = table.insertRow();
-            let date = row.insertCell(0);
-            date.innerHTML = item.Date;
-            let user = row.insertCell(1);
-            user.innerHTML = item.User;
-            let activity = row.insertCell(2);
-            activity.innerHTML = item.Activity;
+            row.insertCell(0).innerHTML = item.TransactionDate;
+            row.insertCell(1).innerHTML = item.SettlementDate;
+            row.insertCell(2).innerHTML = item.User;
+            row.insertCell(3).innerHTML = currencies[item.Currency];
+            row.insertCell(4).innerHTML = types[item.Type];
+            row.insertCell(5).innerHTML = item.Amount;
         });
     }
 

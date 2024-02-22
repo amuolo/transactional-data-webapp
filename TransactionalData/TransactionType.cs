@@ -6,17 +6,17 @@ namespace Model;
 
 public enum TransactionType : byte
 {
-    Food,
+    Food = 0,
 
-    Drinks,
+    Drinks = 1,
 
-    Travel, 
+    Travel = 2, 
 
-    Leisure, 
+    Leisure = 3, 
 
-    Rent, 
+    Rent = 4, 
 
-    Mortgage, 
+    Mortgage = 5, 
 
-    Income
+    Income = 6
 }
