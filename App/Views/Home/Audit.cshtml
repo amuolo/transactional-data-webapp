@@ -10,6 +10,8 @@
 
 <p> List of Activities </p>
 
+<br />
+
 <script type="text/javascript">
     $(document).ready(function () {
 
@@ -20,7 +22,6 @@
             async: true,
             cache: false,
             success: function (data) {
-                var result = "";
                 $.each(data, function (id, item) {
                     const table = document.getElementById("tableBody");
                     let row = table.insertRow();
@@ -30,11 +31,7 @@
                     user.innerHTML = item.User;
                     let activity = row.insertCell(2);
                     activity.innerHTML = item.Activity;
-                    result += '<b>Date : </b>' + item.Date + '<br/>' +
-                        '<b> User :</b>' + item.User + '<br/>' +
-                        '<b> Activity :</b>' + item.Activity + '<hr/>';
                 });
-                document.getElementById("logs").innerHTML = result;
             },
             error: function (req, status, error) {
                 alert('Failed to retrieve logs.');
@@ -60,9 +57,6 @@
     </thead>
     <tbody id="tableBody"></tbody>
 </table>
-
-<div id="logs"></div>
-
 
 
 

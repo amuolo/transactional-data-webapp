@@ -18,23 +18,45 @@ public class TransactionsController : Controller
         _dbContext = dbContext;
     }
 
-    // GET: Transactions
-    public async Task<IActionResult> Index()
+    [HttpGet]
+    public async Task<JsonResult> Overview()
     {
         await InitializeCacheAsync();
-        return View(TransactionsCache);
+        var items = TransactionsCache!.GroupBy(x => x.User).Select(x => {
+            var plus = x.Where(t => t.Amount > 0).Sum(t => t.Amount);
+            var minus = x.Where(t => t.Amount <= 0).Sum(t => t.Amount);
+            return new
+            {
+                User = x.Key,
+                Earnings = plus,
+                Expenses = minus,
+                Balance = plus + minus
+            };
+        }).ToArray();
+        return Json(items, JsonSerializerOptions.Default);
     }
 
-    private async Task InitializeCacheAsync()
-    {
-        if (TransactionsCache is null)
-            TransactionsCache = await _dbContext.TransactionalData.OrderByDescending(x => x.TransactionDate).ToListAsync();
-    }
-
-    // GET: Transactions/Details/5
     [HttpGet]
-    public JsonResult Details(Guid? id)
+    public async Task<JsonResult> Earnings()
     {
+        await InitializeCacheAsync();
+        var items = TransactionsCache!.Where(x => x.Amount > 0).ToList();
+        return Json(items, JsonSerializerOptions.Default);
+    }
+
+    [HttpGet]
+    public async Task<JsonResult> Expenses()
+    {
+        await InitializeCacheAsync();
+        var items = TransactionsCache!.Where(x => x.Amount <= 0).ToList();
+        return Json(items, JsonSerializerOptions.Default);
+    }
+
+    [HttpGet]
+    public async Task<JsonResult> Details(Guid? id)
+    {
+        await InitializeCacheAsync();
+
         if (id is null)
             return Error("Cannot process null transactions.");
 
@@ -75,6 +97,12 @@ public class TransactionsController : Controller
 
         await CommitTransactionAsync(transaction);
         return await CommitLogAsync("Transaction submitted successfully!", user);        
+    }
+
+    private async Task InitializeCacheAsync()
+    {
+        if (TransactionsCache is null)
+            TransactionsCache = await _dbContext.TransactionalData.OrderByDescending(x => x.TransactionDate).ToListAsync();
     }
 
     private async Task<string> CommitLogAsync(string msg, string? user)

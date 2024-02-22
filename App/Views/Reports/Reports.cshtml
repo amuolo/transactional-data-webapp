@@ -1,24 +1,134 @@
 ﻿@using Model
+@model Transaction
 
 @{
     ViewData["Title"] = "Account Transaction Report";
 }
 
 <div class="evenly-distributed-children">
-    <button class="button6" id="btnOverview" role="button" onclick="myFunction()"> Overview </button>
-    <button class="button6" id="btnEarnings" role="button" onclick="myFunction()"> Earnings </button>
-    <button class="button6" id="btnExpenses" role="button" onclick="myFunction()"> Expenses </button>
+    <button class="button6" id="btnOverview" role="button" onclick="setOverview()"> Overview </button>
+    <button class="button6" id="btnEarnings" role="button" onclick="setEarnings()"> Earnings </button>
+    <button class="button6" id="btnExpenses" role="button" onclick="setExpenses()"> Expenses </button>
 </div>
 
-<h6> @ViewData["Title"] </h6>
+<br /><br />
 
-<p> Summary </p>
+<h4> @ViewData["Title"] </h4>
 
-<ul>
-    @{
+<h6 id="reportType"> </h6>
 
+<br />
+
+<script type="text/javascript">
+    function setOverview() {
+        $.ajax({
+            type: "GET",
+            url: "/Transactions/Overview",
+            dataType: "json",
+            async: true,
+            cache: false,
+            success: function (data) {
+                document.getElementById("reportType").innerHTML = "Overview";
+                document.getElementById("overviewReportTable").hidden = false;
+                document.getElementById("fullReportTable").hidden = true;
+                const table = document.getElementById("overviewReportTableBody");
+                table.innerHTML = "";
+                $.each(data, function (id, item) {
+                    let row = table.insertRow();
+                    let user = row.insertCell(0);
+                    user.innerHTML = item.User;
+                    let earnings = row.insertCell(1);
+                    earnings.innerHTML = item.Earnings;
+                    let expenses = row.insertCell(2);
+                    expenses.innerHTML = item.Expenses;
+                    let balance = row.insertCell(3);
+                    balance.innerHTML = item.Balance;
+                });
+            },
+            error: function (req, status, error) {
+                alert(error.msg);
+            }
+        });
+    };
+
+    function fillTable(data) {
+        document.getElementById("overviewReportTable").hidden = true;
+        document.getElementById("fullReportTable").hidden = false;
+        const table = document.getElementById("fullReportTableBody");
+        table.innerHTML = "";
+        $.each(data, function (id, item) {
+            let row = table.insertRow();
+            let date = row.insertCell(0);
+            date.innerHTML = item.Date;
+            let user = row.insertCell(1);
+            user.innerHTML = item.User;
+            let activity = row.insertCell(2);
+            activity.innerHTML = item.Activity;
+        });
     }
-</ul>
+
+    function setEarnings() {
+        $.ajax({
+            type: "GET",
+            url: "/Transactions/Earnings",
+            dataType: "json",
+            async: true,
+            cache: false,
+            success: function (data) {
+                document.getElementById("reportType").innerHTML = "Earnings";
+                fillTable(data);
+            },
+            error: function (req, status, error) {
+                alert(error.msg);
+            }
+        });
+    };
+
+    function setExpenses() {
+        $.ajax({
+            type: "GET",
+            url: "/Transactions/Expenses",
+            dataType: "json",
+            async: true,
+            cache: false,
+            success: function (data) {
+                document.getElementById("reportType").innerHTML = "Expenses";
+                fillTable(data);
+            },
+            error: function (req, status, error) {
+                alert(error.msg);
+            }
+        });
+    };
+</script>
+
+<table class="table" id="overviewReportTable" hidden>
+    <thead>
+        <tr>
+            <th> User </th>
+            <th> Earnings </th>
+            <th> Expenses </th>
+            <th> Balance </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="overviewReportTableBody"></tbody>
+</table>
+
+<table class="table" id="fullReportTable" hidden>
+    <thead>
+        <tr>
+            <th> @Html.DisplayNameFor(model => model.TransactionDate) </th>
+            <th> @Html.DisplayNameFor(model => model.SettlementDate) </th>
+            <th> @Html.DisplayNameFor(model => model.User) </th>
+            <th> @Html.DisplayNameFor(model => model.Currency) </th>
+            <th> @Html.DisplayNameFor(model => model.Type) </th>
+            <th> @Html.DisplayNameFor(model => model.Amount) </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="fullReportTableBody"></tbody>
+</table>
 
 
 
