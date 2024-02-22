@@ -4,10 +4,11 @@
     ViewData["Title"] = "Account Transaction Report";
 }
 
-<h5> 
-    <a asp-area="" asp-controller="Report" asp-action="Earnings">Earnings</a> 
-    <a asp-area="" asp-controller="Report" asp-action="Expenses">Expenses</a>
-</h5>
+<div class="evenly-distributed-children">
+    <button class="button6" id="btnOverview" role="button" onclick="myFunction()"> Overview </button>
+    <button class="button6" id="btnEarnings" role="button" onclick="myFunction()"> Earnings </button>
+    <button class="button6" id="btnExpenses" role="button" onclick="myFunction()"> Expenses </button>
+</div>
 
 <hr />
 

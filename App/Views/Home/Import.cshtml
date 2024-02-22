@@ -1,11 +1,8 @@
-﻿<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"> </script>
-
-@using Model
+﻿@using Model
 @model Model.Transaction
 
 @{
     ViewData["Title"] = "Import";
-    //data: $('#creationForm').serializeArray(),
 }
 
 <h3> Process New Transaction </h3>
@@ -39,7 +36,6 @@ $(document).ready(function () {
 <div class="row">
     <div class="col-md-4">
         <form id="creationForm">
-            <!-- asp-controller="Transactions" asp-action="Create" method="POST" -->
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="TransactionDate" class="control-label"></label>
