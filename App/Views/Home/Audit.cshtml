@@ -1,4 +1,6 @@
-﻿@using Model
+﻿<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"> </script>
+
+@using Model
 
 @{
     ViewData["Title"] = "Audit Trail";
@@ -8,7 +10,27 @@
 
 <hr />
 
-<p> Summary </p>
+<p> List of Activities </p>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $.ajax({
+            type: "POST",
+            url: "/Transactions/Create",
+            data: $('#creationForm').serializeArray(),
+            dataType: "text",
+            async: true,
+            cache: false,
+            success: function (msg) {
+                document.getElementById("log").innerHTML = msg;
+            },
+            error: function (req, status, error) {
+                document.getElementById("log").innerHTML = error;
+            }
+        });
+    });
+</script>
 
 
 
