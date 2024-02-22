@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using App.Data;
 using Model;
+using System.Text.Json;
+using System.Net;
 
 namespace App.Controllers;
 
@@ -30,17 +32,20 @@ public class TransactionsController : Controller
     }
 
     // GET: Transactions/Details/5
-    public async Task<IActionResult> Details(Guid? id)
+    [HttpGet]
+    public JsonResult Details(Guid? id)
     {
         if (id is null)
-            return NotFound();
+            return Error("Cannot process null transactions.");
 
-        var transactionalData = await _dbContext.TransactionalData.FirstOrDefaultAsync(m => m.Id == id);
+        var item = TransactionsCache?.FirstOrDefault(m => m.Id == id);
 
-        if (transactionalData is null)
-            return NotFound();
+        if (item is null)
+            return Error("Unable to find transaction.");
 
-        return View(transactionalData);
+        return Error("Unable to find transaction.");
+
+        return Json(item, JsonSerializerOptions.Default);
     }
 
     [HttpPost]
@@ -89,85 +94,9 @@ public class TransactionsController : Controller
         TransactionsCache?.Add(transaction);
     }
 
-    // GET: Transactions/Edit/5
-    public async Task<IActionResult> Edit(Guid? id)
+    private JsonResult Error(string message)
     {
-        if (id is null)
-            return NotFound();
-
-        var transactionalData = await _dbContext.TransactionalData.FindAsync(id);
-        
-        if (transactionalData is null)
-            return NotFound();
-
-        return View(transactionalData);
-    }
-
-    // POST: Transactions/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id,
-        [Bind(nameof(Transaction.Id)+","+nameof(Transaction.TransactionDate)+","+nameof(Transaction.SettlementDate)
-         +","+nameof(Transaction.User)+","+nameof(Transaction.Currency)+","+nameof(Transaction.Type)+","+nameof(Transaction.Amount))] 
-        Transaction transactionalData)
-    {
-        if (id != transactionalData.Id)
-            return NotFound();
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _dbContext.Update(transactionalData);
-                await _dbContext.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TransactionalDataExists(transactionalData.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(transactionalData);
-    }
-
-    // GET: Transactions/Delete/5
-    public async Task<IActionResult> Delete(Guid? id)
-    {
-        if (id is null)
-            return NotFound();
-
-        var transactionalData = await _dbContext.TransactionalData.FirstOrDefaultAsync(m => m.Id == id);
-        
-        if (transactionalData is null)
-            return NotFound();
-
-        return View(transactionalData);
-    }
-
-    // POST: Transactions/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(Guid id)
-    {
-        var transactionalData = await _dbContext.TransactionalData.FindAsync(id);
-        if (transactionalData != null)
-            _dbContext.TransactionalData.Remove(transactionalData);
-
-        await _dbContext.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool TransactionalDataExists(Guid id)
-    {
-        return _dbContext.TransactionalData.Any(e => e.Id == id);
+        Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+        return Json(new { msg = message });
     }
 }
