@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Model;
 
-public record Transaction()
+public record Transaction
 {
     [Key]
     public Guid Id { get; set; }
@@ -19,7 +19,9 @@ public record Transaction()
     public DateTime SettlementDate { get; set; } = DateTime.UtcNow;
 
     [Required]
-    public string User { get; set; } = string.Empty;
+    [StringLength(60, MinimumLength = 3)]
+    [RegularExpression(@"^(?![\s.]+$)[a-zA-Z\u00C0-\u017F\s]*$")]
+    public string User { get; set; }
 
     [Required]
     [EnumDataType(typeof(Currency))]

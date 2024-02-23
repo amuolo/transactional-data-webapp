@@ -11,28 +11,6 @@
 
 <p> Fill in the following form: </p>
 
-<script type="text/javascript">
-$(document).ready(function () {
-    $('#createButton').click(function () {
-
-        $.ajax({
-            type: "POST",
-            url: "/Transactions/Create",
-            data: $('#creationForm').serializeArray(),
-            dataType: "text",
-            async: true, 
-            cache: false,
-            success: function (msg) {
-                document.getElementById("log").innerHTML = msg;
-            },
-            error: function (req, status, error) {
-                document.getElementById("log").innerHTML = error;
-            }
-        });
-    });
-});
-</script>
-
 <div class="row">
     <div class="col-md-4">
         <form id="creationForm">
@@ -68,7 +46,7 @@ $(document).ready(function () {
             </div>
             <br />
             <div class="form-group">
-                <input type="button" value="Create" id="createButton" class="btn btn-primary" />
+                <input type="submit" value="Create" id="btn-create" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -77,3 +55,32 @@ $(document).ready(function () {
 <hr />
 
 <div id="log"> </div>
+
+<script type="text/javascript">
+    $('#creationForm').submit(function submitToServer(event) {
+        event.preventDefault();
+        if (!$('#creationForm').valid())
+            return false;
+        $.ajax({
+            type: "POST",
+            url: "/Transactions/Create",
+            data: $('#creationForm').serialize(),
+            dataType: "json",
+            async: true,
+            cache: false,
+            success: function (response) {
+                document.getElementById("log").innerHTML = response.message;
+            },
+            error: function (req, status, error) {
+                document.getElementById("log").innerHTML = error;
+            }
+        });
+        return false;
+    });
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

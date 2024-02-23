@@ -20,13 +20,40 @@
 
 <br />
 
+<table class="table" id="overviewReportTable" hidden>
+    <thead>
+        <tr>
+            <th> User </th>
+            <th> Earnings </th>
+            <th> Expenses </th>
+            <th> Balance </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="overviewReportTableBody"></tbody>
+</table>
+
+<table class="table" id="fullReportTable" hidden>
+    <thead>
+        <tr>
+            <th> @Html.DisplayNameFor(model => model.TransactionDate) </th>
+            <th> @Html.DisplayNameFor(model => model.SettlementDate) </th>
+            <th> @Html.DisplayNameFor(model => model.User) </th>
+            <th> @Html.DisplayNameFor(model => model.Currency) </th>
+            <th> @Html.DisplayNameFor(model => model.Type) </th>
+            <th> @Html.DisplayNameFor(model => model.Amount) </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="fullReportTableBody"></tbody>
+</table>
+
+
 <script type="text/javascript">
     $(document).ready(function () {
         setOverview();
     })
-</script>
 
-<script type="text/javascript">
     function setOverview() {
         $.ajax({
             type: "GET",
@@ -106,34 +133,6 @@
         });
     };
 </script>
-
-<table class="table" id="overviewReportTable" hidden>
-    <thead>
-        <tr>
-            <th> User </th>
-            <th> Earnings </th>
-            <th> Expenses </th>
-            <th> Balance </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody id="overviewReportTableBody"></tbody>
-</table>
-
-<table class="table" id="fullReportTable" hidden>
-    <thead>
-        <tr>
-            <th> @Html.DisplayNameFor(model => model.TransactionDate) </th>
-            <th> @Html.DisplayNameFor(model => model.SettlementDate) </th>
-            <th> @Html.DisplayNameFor(model => model.User) </th>
-            <th> @Html.DisplayNameFor(model => model.Currency) </th>
-            <th> @Html.DisplayNameFor(model => model.Type) </th>
-            <th> @Html.DisplayNameFor(model => model.Amount) </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody id="fullReportTableBody"></tbody>
-</table>
 
 
 
