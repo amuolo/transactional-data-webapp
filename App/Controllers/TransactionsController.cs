@@ -5,14 +5,17 @@ using Model;
 using System.Text.Json;
 using System.Net;
 using System.Collections.Concurrent;
-using Newtonsoft.Json.Linq;
 using App.Extensions;
+using Model.Enums;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace App.Controllers;
 
 public class TransactionsController : Controller
 {
     private readonly DbCatalogContext _dbContext;
+
+    public HubConnection Connection { get; }
 
     private ConcurrentDictionary<Guid, Transaction>? TransactionsCache { get; set; }
 
@@ -21,12 +24,13 @@ public class TransactionsController : Controller
     public TransactionsController(DbCatalogContext dbContext)
     {
         _dbContext = dbContext;
+        Connection = new HubConnectionBuilder().WithUrl(Consts.MessageHubAddress).WithAutomaticReconnect().Build();
     }
 
     [HttpGet]
     public async Task<JsonResult> Overview()
     {
-        await InitializeCacheAsync();
+        await UpdateCacheAsync();
         var items = BalanceByUser.Values.Select(x => new 
         {
             User = x.User,
@@ -40,23 +44,23 @@ public class TransactionsController : Controller
     [HttpGet]
     public async Task<JsonResult> Earnings()
     {
-        await InitializeCacheAsync();
-        var items = TransactionsCache!.Values.Where(x => x.Amount > 0).ToList();
+        await UpdateCacheAsync();
+        var items = TransactionsCache!.Values.Where(x => x.Amount > 0).OrderByDescending(x => x.TransactionDate).ToList();
         return Json(items, JsonSerializerOptions.Default);
     }
 
     [HttpGet]
     public async Task<JsonResult> Expenses()
     {
-        await InitializeCacheAsync();
-        var items = TransactionsCache!.Values.Where(x => x.Amount <= 0).ToList();
+        await UpdateCacheAsync();
+        var items = TransactionsCache!.Values.Where(x => x.Amount <= 0).OrderByDescending(x => x.TransactionDate).ToList();
         return Json(items, JsonSerializerOptions.Default);
     }
 
     [HttpGet]
     public async Task<JsonResult> Details(Guid id)
     {
-        await InitializeCacheAsync();
+        await UpdateCacheAsync();
            
         if (!TransactionsCache.TryGetValue(id, out var item))
             return Error("Unable to find transaction.");
@@ -83,7 +87,7 @@ public class TransactionsController : Controller
             decimalAmount > 0 && type is not TransactionType.Income)
             return await CommitLogAsync($"Error: {nameof(TransactionType)} selected is not compatible with {nameof(Transaction.Amount)}", user);
 
-        await InitializeCacheAsync();
+        await UpdateCacheAsync();
 
         if (decimalAmount <= 0 && (!BalanceByUser.TryGetValue(user, out var balance) || balance.Value < -decimalAmount))
             return await CommitLogAsync($"Error: user {user} does not have enough money to pay this transaction", user);
@@ -101,13 +105,11 @@ public class TransactionsController : Controller
         return await CommitLogAsync("Transaction submitted successfully!", user);        
     }
 
-    private async Task InitializeCacheAsync()
+    private async Task UpdateCacheAsync(Transaction? transaction = null)
     {
         if (TransactionsCache is null || BalanceByUser is null)
         {
-            TransactionsCache = new ConcurrentDictionary<Guid, Transaction>
-                ((await _dbContext.TransactionalData.OrderByDescending(x => x.TransactionDate).ToArrayAsync())
-                .ToDictionary(x => x.Id));
+            TransactionsCache = (await _dbContext.TransactionalData.ToArrayAsync()).ToConcurrentDictionary(x => x.Id);
 
             BalanceByUser = TransactionsCache!.Values.GroupBy(x => x.User).Select(x =>
             {
@@ -116,6 +118,18 @@ public class TransactionsController : Controller
                 return new Balance(User: x.Key, Earnings: plus, Expenses: minus, Value: plus + minus);
             })
             .ToConcurrentDictionary(x => x.User);
+        }
+
+        if(transaction is not null)
+        {
+            TransactionsCache.TryAdd(transaction.Id, transaction);
+
+            var balance = BalanceByUser[transaction.User];
+            balance = balance with { Value = balance.Value + transaction.Amount };
+            if (transaction.Amount > 0)
+                BalanceByUser[transaction.User] = balance with { Earnings = balance.Earnings + transaction.Amount };
+            else
+                BalanceByUser[transaction.User] = balance with { Expenses = balance.Expenses + transaction.Amount };
         }
     }
 
@@ -132,8 +146,15 @@ public class TransactionsController : Controller
         transaction.Id = Guid.NewGuid();
         _dbContext.Add(transaction);
         await _dbContext.SaveChangesAsync();
-        await InitializeCacheAsync();
-        TransactionsCache?.TryAdd(transaction.Id, transaction);
+        await UpdateCacheAsync(transaction);
+        await BroadcastDataChangedAsync();
+    }
+
+    private async Task BroadcastDataChangedAsync()
+    {
+        await Connection.StartAsync();
+        await Connection.SendAsync(Consts.SendMessage, GetType().Name, Consts.DataChanged);
+        await Connection.StopAsync();
     }
 
     private JsonResult Error(string message)

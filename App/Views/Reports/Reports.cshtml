@@ -1,5 +1,7 @@
-﻿@using Model
+﻿@using App.Extensions
+@using Model.Enums
 @using Model.Extensions
+@using Model
 @model Transaction
 
 @{
@@ -48,10 +50,32 @@
     <tbody id="fullReportTableBody"></tbody>
 </table>
 
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
 
 <script type="text/javascript">
+    const Overview = "Overview";
+    const Earnings = "Earnings";
+    const Expenses = "Expenses";
+
+    let connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
+
+    connection.on("@(Consts.ReceiveMessage)", function (user, message) {
+        alert("bla");
+        if (message == "@(Consts.DataChanged)") {
+            const reportType = document.getElementById("reportType").innerHTML;
+            if (reportType == Overview) setOverview();
+            else if (reportType == Earnings) setEarnings();
+            else if (reportType == Expenses) setExpenses();
+        }
+    });
+
     $(document).ready(function () {
         setOverview();
+
+        connection.start().then(function () {
+        }).catch(function (err) {
+            return alert(err.toString());
+        });
     })
 
     function setOverview() {

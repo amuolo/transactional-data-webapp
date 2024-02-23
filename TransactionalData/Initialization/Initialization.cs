@@ -1,4 +1,6 @@
-﻿namespace Model.Initialization;
+﻿using Model.Enums;
+
+namespace Model.Initialization;
 
 public static class Initialization
 {

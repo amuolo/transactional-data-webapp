@@ -1,550 +1,549 @@
-﻿
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
-namespace Model;
+namespace Model.Enums;
 
 public enum Currency : byte
 {
-    [Description("United Arab Emirates dirham")] 
-    AED ,
+    [Description("United Arab Emirates dirham")]
+    AED,
 
-    [Description("Afghan afghani")] 
-    AFN ,
+    [Description("Afghan afghani")]
+    AFN,
 
-    [Description("Albanian lek")] 
-    ALL ,
+    [Description("Albanian lek")]
+    ALL,
 
-    [Description("Armenian dram")] 
-    AMD ,
+    [Description("Armenian dram")]
+    AMD,
 
-    [Description("Netherlands Antillean guilder")] 
-    ANG ,
+    [Description("Netherlands Antillean guilder")]
+    ANG,
 
-    [Description("Angolan kwanza")] 
-    AOA ,
+    [Description("Angolan kwanza")]
+    AOA,
 
     [Description("Argentine peso")]
-    ARS ,
+    ARS,
 
     [Description("Australian dollar")]
-    AUD ,
+    AUD,
 
     [Description("Aruban florin")]
-    AWG ,
+    AWG,
 
     [Description("Azerbaijani manat")]
-    AZN ,
+    AZN,
 
     [Description("Bosnia and Herzegovina convertible mark")]
-    BAM ,
+    BAM,
 
     [Description("Barbados dollar")]
-    BBD ,
+    BBD,
 
     [Description("Bangladeshi taka")]
-    BDT ,
+    BDT,
 
     [Description("Bulgarian lev")]
-    BGN ,
+    BGN,
 
     [Description("Bahraini dinar")]
-    BHD ,
+    BHD,
 
     [Description("Burundian franc")]
-    BIF ,
+    BIF,
 
     [Description("Bermudian dollar")]
-    BMD ,
+    BMD,
 
     [Description("Brunei dollar")]
-    BND ,
+    BND,
 
     [Description("Boliviano")]
-    BOB ,
+    BOB,
 
     [Description("Bolivian Mvdol (funds code)")]
-    BOV ,
+    BOV,
 
     [Description("Brazilian real")]
-    BRL ,
+    BRL,
 
     [Description("Bahamian dollar")]
-    BSD ,
+    BSD,
 
     [Description("Bhutanese ngultrum")]
-    BTN ,
+    BTN,
 
     [Description("Botswana pula")]
-    BWP ,
+    BWP,
 
     [Description("Belarusian ruble")]
-    BYN ,
+    BYN,
 
     [Description("Belize dollar")]
-    BZD ,
+    BZD,
 
     [Description("Canadian dollar")]
-    CAD ,
+    CAD,
 
     [Description("Congolese franc")]
-    CDF ,
+    CDF,
 
     [Description("WIR euro (complementary currency)")]
-    CHE ,
+    CHE,
 
     [Description("Swiss franc")]
-    CHF ,
+    CHF,
 
     [Description("WIR franc (complementary currency)")]
-    CHW ,
+    CHW,
 
     [Description("Unidad de Fomento (funds code)")]
-    CLF ,
+    CLF,
 
     [Description("Chilean peso")]
-    CLP ,
+    CLP,
 
     [Description("Colombian peso")]
-    COP ,
+    COP,
 
     [Description("Unidad de Valor Real (UVR) (funds code)")]
-    COU ,
+    COU,
 
     [Description("Costa Rican colon")]
-    CRC ,
+    CRC,
 
     [Description("Cuban convertible peso")]
-    CUC ,
+    CUC,
 
     [Description("Cuban peso")]
-    CUP ,
+    CUP,
 
     [Description("Cape Verdean escudo")]
-    CVE ,
+    CVE,
 
     [Description("Czech koruna")]
-    CZK ,
+    CZK,
 
     [Description("Djiboutian franc")]
-    DJF ,
+    DJF,
 
     [Description("Danish krone")]
-    DKK ,
+    DKK,
 
     [Description("Dominican peso")]
-    DOP ,
+    DOP,
 
     [Description("Algerian dinar")]
-    DZD ,
+    DZD,
 
     [Description("Egyptian pound")]
-    EGP ,
+    EGP,
 
     [Description("Eritrean nakfa")]
-    ERN ,
+    ERN,
 
     [Description("Ethiopian birr")]
-    ETB ,
+    ETB,
 
     [Description("Euro")]
-    EUR ,
+    EUR,
 
     [Description("Fiji dollar")]
-    FJD ,
+    FJD,
 
     [Description("Falkland Islands pound")]
-    FKP ,
+    FKP,
 
     [Description("Pound sterling")]
-    GBP ,
+    GBP,
 
     [Description("Georgian lari")]
-    GEL ,
+    GEL,
 
     [Description("Ghanaian cedi")]
-    GHS ,
+    GHS,
 
     [Description("Gibraltar pound")]
-    GIP ,
+    GIP,
 
     [Description("Gambian dalasi")]
-    GMD ,
+    GMD,
 
     [Description("Guinean franc")]
-    GNF ,
+    GNF,
 
     [Description("Guatemalan quetzal")]
-    GTQ ,
+    GTQ,
 
     [Description("Guyanese dollar")]
-    GYD ,
+    GYD,
 
     [Description("Hong Kong dollar")]
-    HKD ,
+    HKD,
 
     [Description("Honduran lempira")]
-    HNL ,
+    HNL,
 
     [Description("Croatian kuna")]
-    HRK ,
+    HRK,
 
     [Description("Haitian gourde")]
-    HTG ,
+    HTG,
 
     [Description("Hungarian forint")]
-    HUF ,
+    HUF,
 
     [Description("Indonesian rupiah")]
-    IDR ,
+    IDR,
 
     [Description("Israeli new shekel")]
-    ILS ,
+    ILS,
 
     [Description("Indian rupee")]
-    INR ,
+    INR,
 
     [Description("Iraqi dinar")]
-    IQD ,
+    IQD,
 
     [Description("Iranian rial")]
-    IRR ,
+    IRR,
 
     [Description("Icelandic króna (plural: krónur)")]
-    ISK ,
+    ISK,
 
     [Description("Jamaican dollar")]
-    JMD ,
+    JMD,
 
     [Description("Jordanian dinar")]
-    JOD ,
+    JOD,
 
     [Description("Japanese yen")]
-    JPY ,
+    JPY,
 
     [Description("Kenyan shilling")]
-    KES ,
+    KES,
 
     [Description("Kyrgyzstani som")]
-    KGS ,
+    KGS,
 
     [Description("Cambodian riel")]
-    KHR ,
+    KHR,
 
     [Description("Comoro franc")]
-    KMF ,
+    KMF,
 
     [Description("North Korean won")]
-    KPW ,
+    KPW,
 
     [Description("South Korean won")]
-    KRW ,
+    KRW,
 
     [Description("Kuwaiti dinar")]
-    KWD ,
+    KWD,
 
     [Description("Cayman Islands dollar")]
-    KYD ,
+    KYD,
 
     [Description("Kazakhstani tenge")]
-    KZT ,
+    KZT,
 
     [Description("Lao kip")]
-    LAK ,
+    LAK,
 
     [Description("Lebanese pound")]
-    LBP ,
+    LBP,
 
     [Description("Sri Lankan rupee")]
-    LKR ,
+    LKR,
 
     [Description("Liberian dollar")]
-    LRD ,
+    LRD,
 
     [Description("Lesotho loti")]
-    LSL ,
+    LSL,
 
     [Description("Libyan dinar")]
-    LYD ,
+    LYD,
 
     [Description("Moroccan dirham")]
-    MAD ,
+    MAD,
 
     [Description("Moldovan leu")]
-    MDL ,
+    MDL,
 
     [Description("Malagasy ariary")]
-    MGA ,
+    MGA,
 
     [Description("Macedonian denar")]
-    MKD ,
+    MKD,
 
     [Description("Myanmar kyat")]
-    MMK ,
+    MMK,
 
     [Description("Mongolian tögrög")]
-    MNT ,
+    MNT,
 
     [Description("Macanese pataca")]
-    MOP ,
+    MOP,
 
     [Description("Mauritanian ouguiya")]
-    MRU ,
+    MRU,
 
     [Description("Mauritian rupee")]
-    MUR ,
+    MUR,
 
     [Description("Maldivian rufiyaa")]
-    MVR ,
+    MVR,
 
     [Description("Malawian kwacha")]
-    MWK ,
+    MWK,
 
     [Description("Mexican peso")]
-    MXN ,
+    MXN,
 
     [Description("Mexican Unidad de Inversion (UDI) (funds code)")]
-    MXV ,
+    MXV,
 
     [Description("Malaysian ringgit")]
-    MYR ,
+    MYR,
 
     [Description("Mozambican metical")]
-    MZN ,
+    MZN,
 
     [Description("Namibian dollar")]
-    NAD ,
+    NAD,
 
     [Description("Nigerian naira")]
-    NGN ,
+    NGN,
 
     [Description("Nicaraguan córdoba")]
-    NIO ,
+    NIO,
 
     [Description("Norwegian krone")]
-    NOK ,
+    NOK,
 
     [Description("Nepalese rupee")]
-    NPR ,
+    NPR,
 
     [Description("New Zealand dollar")]
-    NZD ,
+    NZD,
 
     [Description("Omani rial")]
-    OMR ,
+    OMR,
 
     [Description("Panamanian balboa")]
-    PAB ,
+    PAB,
 
     [Description("Peruvian sol")]
-    PEN ,
+    PEN,
 
     [Description("Papua New Guinean kina")]
-    PGK ,
+    PGK,
 
     [Description("Philippine peso")]
-    PHP ,
+    PHP,
 
     [Description("Pakistani rupee")]
-    PKR ,
+    PKR,
 
     [Description("Polish złoty")]
-    PLN ,
+    PLN,
 
     [Description("Paraguayan guaraní")]
-    PYG ,
+    PYG,
 
     [Description("Qatari riyal")]
-    QAR ,
+    QAR,
 
     [Description("Romanian leu")]
-    RON ,
+    RON,
 
     [Description("Serbian dinar")]
-    RSD ,
+    RSD,
 
     [Description("Renminbi[14]")]
-    CNY ,
+    CNY,
 
     [Description("Russian ruble")]
-    RUB ,
+    RUB,
 
     [Description("Rwandan franc")]
-    RWF ,
+    RWF,
 
     [Description("Saudi riyal")]
-    SAR ,
+    SAR,
 
     [Description("Solomon Islands dollar")]
-    SBD ,
+    SBD,
 
     [Description("Seychelles rupee")]
-    SCR ,
+    SCR,
 
     [Description("Sudanese pound")]
-    SDG ,
+    SDG,
 
     [Description("Swedish krona (plural: kronor)")]
-    SEK ,
+    SEK,
 
     [Description("Singapore dollar")]
-    SGD ,
+    SGD,
 
     [Description("Saint Helena pound")]
-    SHP ,
+    SHP,
 
     [Description("Sierra Leonean leone")]
-    SLL ,
+    SLL,
 
     [Description("Sierra Leonean leone")]
-    SLE ,
+    SLE,
 
     [Description("Somali shilling")]
-    SOS ,
+    SOS,
 
     [Description("Surinamese dollar")]
-    SRD ,
+    SRD,
 
     [Description("South Sudanese pound")]
-    SSP ,
+    SSP,
 
     [Description("São Tomé and Príncipe dobra")]
-    STN ,
+    STN,
 
     [Description("Salvadoran colón")]
-    SVC ,
+    SVC,
 
     [Description("Syrian pound")]
-    SYP ,
+    SYP,
 
     [Description("Swazi lilangeni")]
-    SZL ,
+    SZL,
 
     [Description("Thai baht")]
-    THB ,
+    THB,
 
     [Description("Tajikistani somoni")]
-    TJS ,
+    TJS,
 
     [Description("Turkmenistan manat")]
-    TMT ,
+    TMT,
 
     [Description("Tunisian dinar")]
-    TND ,
+    TND,
 
     [Description("Tongan paʻanga")]
-    TOP ,
+    TOP,
 
     [Description("Turkish lira")]
-    TRY ,
+    TRY,
 
     [Description("Trinidad and Tobago dollar")]
-    TTD ,
+    TTD,
 
     [Description("New Taiwan dollar")]
-    TWD ,
+    TWD,
 
     [Description("Tanzanian shilling")]
-    TZS ,
+    TZS,
 
     [Description("Ukrainian hryvnia")]
-    UAH ,
+    UAH,
 
     [Description("Ugandan shilling")]
-    UGX ,
+    UGX,
 
     [Description("United States dollar")]
-    USD ,
+    USD,
 
     [Description("United States dollar (next day) (funds code)")]
-    USN ,
+    USN,
 
     [Description("Uruguay Peso en Unidades Indexadas (URUIURUI) (funds code)")]
-    UYI ,
+    UYI,
 
     [Description("Uruguayan peso")]
-    UYU ,
+    UYU,
 
     [Description("Unidad previsional")]
-    UYW ,
+    UYW,
 
     [Description("Uzbekistan som")]
-    UZS ,
+    UZS,
 
     [Description("Venezuelan bolívar digital")]
-    VED ,
+    VED,
 
     [Description("Venezuelan bolívar soberano")]
-    VES ,
+    VES,
 
     [Description("Vietnamese đồng")]
-    VND ,
+    VND,
 
     [Description("Vanuatu vatu")]
-    VUV ,
+    VUV,
 
     [Description("Samoan tala")]
-    WST ,
+    WST,
 
     [Description("CFA franc BEAC")]
-    XAF ,
+    XAF,
 
     [Description("Silver (one troy ounce)")]
-    XAG ,
+    XAG,
 
     [Description("Gold (one troy ounce)")]
-    XAU ,
+    XAU,
 
     [Description("European Composite Unit (EURCO) (bond market unit)")]
-    XBA ,
+    XBA,
 
     [Description("European Monetary Unit (E.M.U.-6) (bond market unit)")]
-    XBB ,
+    XBB,
 
     [Description("European Unit of Account 9 (E.U.A.-9) (bond market unit)")]
-    XBC ,
+    XBC,
 
     [Description("European Unit of Account 17 (E.U.A.-17) (bond market unit)")]
-    XBD ,
+    XBD,
 
     [Description("East Caribbean dollar")]
-    XCD ,
+    XCD,
 
     [Description("Special drawing rights")]
-    XDR ,
+    XDR,
 
     [Description("CFA franc BCEAO")]
-    XOF ,
+    XOF,
 
     [Description("Palladium (one troy ounce)")]
-    XPD ,
+    XPD,
 
     [Description("CFP franc (franc Pacifique)")]
-    XPF ,
+    XPF,
 
     [Description("Platinum (one troy ounce)")]
-    XPT ,
+    XPT,
 
     [Description("SUCRE")]
-    XSU ,
+    XSU,
 
     [Description("Code reserved for testing")]
-    XTS ,
+    XTS,
 
     [Description("ADB Unit of Account")]
-    XUA ,
+    XUA,
 
     [Description("No currency")]
-    XXX ,
+    XXX,
 
     [Description("Yemeni rial")]
-    YER ,
+    YER,
 
     [Description("South African rand")]
-    ZAR ,
+    ZAR,
 
     [Description("Zambian kwacha")]
-    ZMW ,
+    ZMW,
 
     [Description("Zimbabwean dollar")]
-    ZWL 
+    ZWL
 }

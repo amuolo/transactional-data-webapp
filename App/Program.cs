@@ -1,25 +1,28 @@
 using Microsoft.EntityFrameworkCore;
 using App.Data;
 using App.DbCatalog;
+using App.Extensions;
+using App;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
-// Database registered with DI here
 // (Console: SqlLocalDb create "TransactionalDataDB", Add-Migration InitialCreate, Update-Database)
+// builder.Services.AddDbContext<CatalogContext>(options => options.UseInMemoryDatabase("Default"));
 builder.Services.AddDbContext<DbCatalogContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DbCatalogContext") 
                             ?? throw new InvalidOperationException("Connection string not found.")));
 
-//builder.Services.AddDbContext<CatalogContext>(options => options.UseInMemoryDatabase("Default"));
+builder.Services.AddSignalR();
+
+builder.WebHost.UseUrls(Consts.Url);
 
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
-{
     scope.ServiceProvider.Initialize();
-}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -32,13 +35,13 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthorization();
+app.MapRazorPages();
+app.MapHub<MessageHub>(Consts.MessageHubPath);
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.Run();
+await app.RunAsync();
