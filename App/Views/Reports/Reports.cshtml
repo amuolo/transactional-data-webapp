@@ -61,7 +61,6 @@
     let connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
 
     connection.on("@(Contract.ReceiveMessage)", function (user, message) {
-        alert("bla");
         if (message == "@(Contract.DataChanged)") {
             const reportType = document.getElementById("reportType").innerHTML;
             if (reportType == Overview) setOverview();

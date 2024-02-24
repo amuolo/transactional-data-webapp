@@ -22,9 +22,12 @@ public class TransactionsController : Controller
 
     private ConcurrentDictionary<string, Balance> BalanceByUser { get; set; }
 
-    public TransactionsController(DbCatalogContext dbContext)
+    private PostBox PostBox { get; set; }
+
+    public TransactionsController(DbCatalogContext dbContext, PostBox postBox)
     {
         _dbContext = dbContext;
+        PostBox = postBox;
         Connection = new HubConnectionBuilder().WithUrl(Contract.MessageHubAddress).WithAutomaticReconnect().Build();
     }
 
@@ -148,14 +151,7 @@ public class TransactionsController : Controller
         _dbContext.Add(transaction);
         await _dbContext.SaveChangesAsync();
         await UpdateCacheAsync(transaction);
-        await BroadcastDataChangedAsync();
-    }
-
-    private async Task BroadcastDataChangedAsync()
-    {
-        await Connection.StartAsync();
-        await Connection.SendAsync(Contract.SendMessage, GetType().Name, Contract.DataChanged);
-        await Connection.StopAsync();
+        PostBox.Enqueue(GetType().Name, Contract.DataChanged);
     }
 
     private JsonResult Error(string message)

@@ -16,6 +16,9 @@ builder.Services.AddDbContext<DbCatalogContext>(options =>
 
 builder.Services.AddSignalR();
 
+builder.Services.AddSingleton<PostBox>()
+                .AddHostedService<PostOffice>();
+
 builder.WebHost.UseUrls(Contract.Url);
 
 var app = builder.Build();
