@@ -2,6 +2,7 @@
 @using Model.Enums
 @using Model.Extensions
 @using Model
+@using Posting
 @model Transaction
 
 @{
@@ -59,9 +60,9 @@
 
     let connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
 
-    connection.on("@(Consts.ReceiveMessage)", function (user, message) {
+    connection.on("@(Contract.ReceiveMessage)", function (user, message) {
         alert("bla");
-        if (message == "@(Consts.DataChanged)") {
+        if (message == "@(Contract.DataChanged)") {
             const reportType = document.getElementById("reportType").innerHTML;
             if (reportType == Overview) setOverview();
             else if (reportType == Earnings) setEarnings();

@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using App.Data;
 using App.DbCatalog;
-using App.Extensions;
-using App;
+using Posting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +16,7 @@ builder.Services.AddDbContext<DbCatalogContext>(options =>
 
 builder.Services.AddSignalR();
 
-builder.WebHost.UseUrls(Consts.Url);
+builder.WebHost.UseUrls(Contract.Url);
 
 var app = builder.Build();
 
@@ -38,7 +37,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 app.MapRazorPages();
-app.MapHub<MessageHub>(Consts.MessageHubPath);
+app.MapHub<MessageHub>(Contract.MessageHubPath);
 
 app.MapControllerRoute(
     name: "default",

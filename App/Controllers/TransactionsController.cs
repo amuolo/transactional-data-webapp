@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using App.Extensions;
 using Model.Enums;
 using Microsoft.AspNetCore.SignalR.Client;
+using Posting;
 
 namespace App.Controllers;
 
@@ -24,7 +25,7 @@ public class TransactionsController : Controller
     public TransactionsController(DbCatalogContext dbContext)
     {
         _dbContext = dbContext;
-        Connection = new HubConnectionBuilder().WithUrl(Consts.MessageHubAddress).WithAutomaticReconnect().Build();
+        Connection = new HubConnectionBuilder().WithUrl(Contract.MessageHubAddress).WithAutomaticReconnect().Build();
     }
 
     [HttpGet]
@@ -153,7 +154,7 @@ public class TransactionsController : Controller
     private async Task BroadcastDataChangedAsync()
     {
         await Connection.StartAsync();
-        await Connection.SendAsync(Consts.SendMessage, GetType().Name, Consts.DataChanged);
+        await Connection.SendAsync(Contract.SendMessage, GetType().Name, Contract.DataChanged);
         await Connection.StopAsync();
     }
 
