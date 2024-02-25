@@ -25,12 +25,9 @@
                 $.each(data, function (id, item) {
                     const table = document.getElementById("tableBody");
                     let row = table.insertRow();
-                    let date = row.insertCell(0);
-                    date.innerHTML = item.Date;
-                    let user = row.insertCell(1);
-                    user.innerHTML = item.User;
-                    let activity = row.insertCell(2);
-                    activity.innerHTML = item.Activity;
+                    row.insertCell(0).innerHTML = item.Date;
+                    row.insertCell(1).innerHTML = item.User;
+                    row.insertCell(2).innerHTML = item.Activity;
                 });
             },
             error: function (req, status, error) {

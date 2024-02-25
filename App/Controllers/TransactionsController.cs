@@ -16,8 +16,6 @@ public class TransactionsController : Controller
 {
     private readonly DbCatalogContext _dbContext;
 
-    public HubConnection Connection { get; }
-
     private ConcurrentDictionary<Guid, Transaction>? TransactionsCache { get; set; }
 
     private ConcurrentDictionary<string, Balance> BalanceByUser { get; set; }
@@ -28,7 +26,6 @@ public class TransactionsController : Controller
     {
         _dbContext = dbContext;
         PostBox = postBox;
-        Connection = new HubConnectionBuilder().WithUrl(Contract.MessageHubAddress).WithAutomaticReconnect().Build();
     }
 
     [HttpGet]
