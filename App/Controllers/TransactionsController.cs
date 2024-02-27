@@ -7,7 +7,6 @@ using System.Net;
 using System.Collections.Concurrent;
 using App.Extensions;
 using Model.Enums;
-using Microsoft.AspNetCore.SignalR.Client;
 using Posting;
 
 namespace App.Controllers;
@@ -73,25 +72,25 @@ public class TransactionsController : Controller
     public async Task<JsonResult> Create(string transactionDate, string user, Currency currency, TransactionType type, string amount)
     {
         if (!ModelState.IsValid)
-            return await CommitLogAsync("Error: model validations fail.", user);
+            return await CommitLogAsync(Constants.Error, "Error: model validations fail.", user);
 
         if (!DateTime.TryParse(transactionDate, out var date))
-            return await CommitLogAsync("Failed to parse value " + nameof(Transaction.TransactionDate), user);
+            return await CommitLogAsync(Constants.Error, "Failed to parse value " + nameof(Transaction.TransactionDate), user);
 
         if (!decimal.TryParse(amount, out var decimalAmount))
-            return await CommitLogAsync("Failed to parse value: " + nameof(Transaction.Amount), user);
+            return await CommitLogAsync(Constants.Error, "Failed to parse value: " + nameof(Transaction.Amount), user);
 
         if (date > DateTime.UtcNow)
-            return await CommitLogAsync("Error: Submission of future transactions is forbidden.", user);
+            return await CommitLogAsync(Constants.Error, "Error: Submission of future transactions is forbidden.", user);
 
         if (decimalAmount <= 0 && type is TransactionType.Income ||
             decimalAmount > 0 && type is not TransactionType.Income)
-            return await CommitLogAsync($"Error: {nameof(TransactionType)} selected is not compatible with {nameof(Transaction.Amount)}", user);
+            return await CommitLogAsync(Constants.Error, $"Error: {nameof(TransactionType)} selected is not compatible with {nameof(Transaction.Amount)}", user);
 
         await UpdateCacheAsync();
 
         if (decimalAmount <= 0 && (!BalanceByUser.TryGetValue(user, out var balance) || balance.Value < -decimalAmount))
-            return await CommitLogAsync($"Error: user {user} does not have enough money to pay this transaction", user);
+            return await CommitLogAsync(Constants.Error, $"Error: user {user} does not have enough money to pay this transaction", user);
 
         var transaction = new Transaction
         {
@@ -103,7 +102,7 @@ public class TransactionsController : Controller
         };
 
         await CommitTransactionAsync(transaction);
-        return await CommitLogAsync("Transaction submitted successfully!", user);        
+        return await CommitLogAsync(Constants.Success, "Transaction submitted successfully!", user);        
     }
 
     private async Task UpdateCacheAsync(Transaction? transaction = null)
@@ -134,12 +133,12 @@ public class TransactionsController : Controller
         }
     }
 
-    private async Task<JsonResult> CommitLogAsync(string msg, string? user)
+    private async Task<JsonResult> CommitLogAsync(string state, string msg, string user)
     {
         var log = new ActivityLog() { User = user?? "", Activity = msg };
         _dbContext.Add(log);
         await _dbContext.SaveChangesAsync();
-        return Json(new { message = log.Activity });
+        return Json(new { message = log.Activity, status = state});
     }
 
     private async Task CommitTransactionAsync(Transaction transaction)

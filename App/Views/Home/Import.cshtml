@@ -70,6 +70,10 @@
             async: true,
             cache: false,
             success: function (response) {
+                if (response.status == '@(Constants.Success)')
+                    document.getElementById("log").className = "alert alert-success";
+                else
+                    document.getElementById("log").className = "alert alert-danger";
                 document.getElementById("log").innerHTML = response.message;
             },
             error: function (req, status, error) {
