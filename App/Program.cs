@@ -9,10 +9,10 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 // (Console: SqlLocalDb create "TransactionalDataDB", Add-Migration InitialCreate, Update-Database)
-// builder.Services.AddDbContext<CatalogContext>(options => options.UseInMemoryDatabase("Default"));
-builder.Services.AddDbContext<DbCatalogContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DbCatalogContext") 
-                            ?? throw new InvalidOperationException("Connection string not found.")));
+ builder.Services.AddDbContext<DbCatalogContext>(options => options.UseInMemoryDatabase("Default"));
+//builder.Services.AddDbContext<DbCatalogContext>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("DbCatalogContext") 
+//                            ?? throw new InvalidOperationException("Connection string not found.")));
 
 builder.Services.AddSignalR();
 
