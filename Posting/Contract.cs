@@ -6,6 +6,8 @@ public class Contract
 
     public const string Url = "https://localhost:7200";
 
+    public const string Url2 = "https://transadata.azurewebsites.net/";
+
     public const string WebSocketPath = "/ws";
 
     public const string MessageHubPath = "/messageHub";

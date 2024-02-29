@@ -19,7 +19,7 @@ builder.Services.AddSignalR();
 builder.Services.AddSingleton<PostBox>()
                 .AddHostedService<PostOffice>();
 
-builder.WebHost.UseUrls(Contract.Url);
+builder.WebHost.UseUrls(Contract.Url, Contract.Url2);
 
 var app = builder.Build();
 

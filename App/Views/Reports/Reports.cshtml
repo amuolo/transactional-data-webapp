@@ -58,7 +58,7 @@
     const Earnings = "Earnings";
     const Expenses = "Expenses";
 
-    let connection = new signalR.HubConnectionBuilder().withUrl("/messageHub").build();
+    let connection = new signalR.HubConnectionBuilder().withUrl('@(Contract.MessageHubPath)').withAutomaticReconnect().build();
 
     connection.on("@(Contract.ReceiveMessage)", function (user, message) {
         if (message == "@(Contract.DataChanged)") {
