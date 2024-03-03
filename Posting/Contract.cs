@@ -12,8 +12,6 @@ public class Contract
 
     public const string MessageHubPath = "/messageHub";
 
-    public const string MessageHubAddress = Url + MessageHubPath;
-
     public const string ReceiveMessage = nameof(ReceiveMessage);
 
     public const string SendMessage = nameof(SendMessage);

@@ -1,28 +1,35 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Hosting;
 
 namespace Posting;
 
 public class PostOffice : BackgroundService
 {
-    private PostBox PostBox { get; set; }
+    private PostBox PostBox { get; }
 
-    public HubConnection Connection { get; }
+    private HubConnection Connection { get; set; }
+
+    private  IHttpContextAccessor HttpContextAccessor { get; }
 
     private SemaphoreSlim Semaphore { get; set; } = new(1, 1);
 
+    private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
+
+    private string AppBaseUrl => $"{HttpContext?.Request.Scheme}://{HttpContext?.Request.Host}{HttpContext?.Request.PathBase}";
+
+    private string SignalRUrl => AppBaseUrl + Contract.MessageHubPath;
+
     private bool IsConnected => Connection is not null && Connection.State == HubConnectionState.Connected;
 
-    public PostOffice(PostBox postBox)
+    public PostOffice(PostBox postBox, IHttpContextAccessor contextAccessor)
     {
-        Connection = new HubConnectionBuilder().WithUrl(Contract.MessageHubAddress).WithAutomaticReconnect().Build();
+        HttpContextAccessor = contextAccessor;
         PostBox = postBox;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await Connection.StartAsync();
-
         PostBox.NewMessage += SendMessage;
     }
 
@@ -30,7 +37,14 @@ public class PostOffice : BackgroundService
     {
         Task.Run(async () =>
         {
-            if (Semaphore.CurrentCount == 0) return;
+            if (Semaphore.CurrentCount == 0) 
+                return;
+
+            if (!IsConnected)
+            {
+                Connection = new HubConnectionBuilder().WithUrl(SignalRUrl).WithAutomaticReconnect().Build();
+                await Connection.StartAsync();
+            }
 
             await Semaphore.WaitAsync();
 

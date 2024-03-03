@@ -17,6 +17,7 @@ builder.Services.AddDbContext<DbCatalogContext>(options =>
 builder.Services.AddSignalR();
 
 builder.Services.AddSingleton<PostBox>()
+                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddHostedService<PostOffice>();
 
 builder.WebHost.UseUrls(Contract.Url, Contract.Url2);
@@ -40,6 +41,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 app.MapRazorPages();
+
 app.MapHub<MessageHub>(Contract.MessageHubPath);
 
 app.MapControllerRoute(
