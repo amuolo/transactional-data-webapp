@@ -35,10 +35,12 @@ public class PostOffice : BackgroundService
 
     private void SendMessage()
     {
+        if (Semaphore.CurrentCount == 0)
+            return;
+
         Task.Run(async () =>
         {
-            if (Semaphore.CurrentCount == 0) 
-                return;
+            await Semaphore.WaitAsync();
 
             if (!IsConnected)
             {
@@ -46,9 +48,7 @@ public class PostOffice : BackgroundService
                 await Connection.StartAsync();
             }
 
-            await Semaphore.WaitAsync();
-
-            while(PostBox.Queue.TryDequeue(out var envelope)) 
+            while (PostBox.Queue.TryDequeue(out var envelope)) 
             {
                 await Connection.SendAsync(Contract.SendMessage, envelope.User, envelope.Message);
             }
