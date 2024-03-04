@@ -27,4 +27,8 @@
     <ProjectReference Include="..\TransactionalData\Model.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+	<InternalsVisibleTo Include="WebAppTests" />
+  </ItemGroup>
+
 </Project>
