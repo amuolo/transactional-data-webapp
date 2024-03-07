@@ -17,9 +17,17 @@ public class TransactionsController : Controller
 
     private ConcurrentDictionary<Guid, Transaction>? TransactionsCache { get; set; }
 
-    private ConcurrentDictionary<string, Balance> BalanceByUser { get; set; }
+    private ConcurrentDictionary<string, Balance>? BalanceByUser { get; set; }
 
     private PostBox PostBox { get; set; }
+
+    //private IHttpContextAccessor HttpContextAccessor { get; }
+
+    //private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
+
+    private string AppBaseUrl => $"{HttpContext?.Request.Scheme}://{HttpContext?.Request.Host}{HttpContext?.Request.PathBase}";
+
+    private string PostingUrl => AppBaseUrl + Contract.MessageHubPath;
 
     public TransactionsController(DbCatalogContext dbContext, PostBox postBox)
     {
@@ -31,7 +39,7 @@ public class TransactionsController : Controller
     public async Task<JsonResult> Overview()
     {
         await UpdateCacheAsync();
-        var items = BalanceByUser.Values.Select(x => new 
+        var items = BalanceByUser!.Values.Select(x => new 
         {
             User = x.User,
             Earnings = x.Earnings,
@@ -62,7 +70,7 @@ public class TransactionsController : Controller
     {
         await UpdateCacheAsync();
            
-        if (!TransactionsCache.TryGetValue(id, out var item))
+        if (!TransactionsCache!.TryGetValue(id, out var item))
             return Error("Unable to find transaction.");
 
         return Json(item, JsonSerializerOptions.Default);
@@ -73,7 +81,7 @@ public class TransactionsController : Controller
     {
         if (!ModelState.IsValid)
             return await CommitLogAsync(Constants.Error, "Error: model validations fail.", user);
-
+        
         if (!DateTime.TryParse(transactionDate, out var date))
             return await CommitLogAsync(Constants.Error, "Failed to parse value " + nameof(Transaction.TransactionDate), user);
 
@@ -86,10 +94,10 @@ public class TransactionsController : Controller
         if (decimalAmount <= 0 && type is TransactionType.Income ||
             decimalAmount > 0 && type is not TransactionType.Income)
             return await CommitLogAsync(Constants.Error, $"Error: {nameof(TransactionType)} selected is not compatible with {nameof(Transaction.Amount)}", user);
-
+        
         await UpdateCacheAsync();
-
-        if (decimalAmount <= 0 && (!BalanceByUser.TryGetValue(user, out var balance) || balance.Value < -decimalAmount))
+        
+        if (decimalAmount <= 0 && (!BalanceByUser!.TryGetValue(user, out var balance) || balance.Value < -decimalAmount))
             return await CommitLogAsync(Constants.Error, $"Error: user {user} does not have enough money to pay this transaction", user);
 
         var transaction = new Transaction
@@ -100,9 +108,9 @@ public class TransactionsController : Controller
             Type = type,
             Amount = decimalAmount
         };
-
+        
         await CommitTransactionAsync(transaction);
-        return await CommitLogAsync(Constants.Success, "Transaction submitted successfully!", user);        
+        return await CommitLogAsync(Constants.Success, "Transaction submitted successfully!", transaction.User);        
     }
 
     private async Task UpdateCacheAsync(Transaction? transaction = null)
@@ -147,7 +155,7 @@ public class TransactionsController : Controller
         _dbContext.Add(transaction);
         await _dbContext.SaveChangesAsync();
         await UpdateCacheAsync(transaction);
-        PostBox.Enqueue(GetType().Name, Contract.DataChanged);
+        PostBox.Enqueue(PostingUrl, GetType().Name, Contract.DataChanged);
     }
 
     private JsonResult Error(string message)

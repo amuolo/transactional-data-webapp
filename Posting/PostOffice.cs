@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Hosting;
 
 namespace Posting;
@@ -10,50 +9,39 @@ public class PostOffice : BackgroundService
 
     private HubConnection Connection { get; set; }
 
-    private  IHttpContextAccessor HttpContextAccessor { get; }
-
-    private SemaphoreSlim Semaphore { get; set; } = new(1, 1);
-
-    private HttpContext? HttpContext => HttpContextAccessor.HttpContext;
-
-    private string AppBaseUrl => $"{HttpContext?.Request.Scheme}://{HttpContext?.Request.Host}{HttpContext?.Request.PathBase}";
-
-    private string SignalRUrl => AppBaseUrl + Contract.MessageHubPath;
+    private SemaphoreSlim Semaphore { get; set; } = new(0, 1);
 
     private bool IsConnected => Connection is not null && Connection.State == HubConnectionState.Connected;
 
-    public PostOffice(PostBox postBox, IHttpContextAccessor contextAccessor)
+    public PostOffice(PostBox postBox)
     {
-        HttpContextAccessor = contextAccessor;
         PostBox = postBox;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        PostBox.NewMessage += SendMessage;
-    }
+        PostBox.NewMessage += () => Semaphore.Release();
 
-    private void SendMessage()
-    {
-        if (Semaphore.CurrentCount == 0)
-            return;
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
 
-        Task.Run(async () =>
+        while(!stoppingToken.IsCancellationRequested)
         {
             await Semaphore.WaitAsync();
 
-            if (!IsConnected)
+            while (!IsConnected)
             {
-                Connection = new HubConnectionBuilder().WithUrl(SignalRUrl).WithAutomaticReconnect().Build();
-                await Connection.StartAsync();
+                await timer.WaitForNextTickAsync(stoppingToken);
+                if(Uri.TryCreate(PostBox.PostingUrl, UriKind.Absolute, out var uri)) 
+                {
+                    Connection = new HubConnectionBuilder().WithUrl(uri).WithAutomaticReconnect().Build();
+                    await Connection.StartAsync();
+                }
             }
 
-            while (PostBox.Queue.TryDequeue(out var envelope)) 
+            while (PostBox.Queue.TryDequeue(out var envelope))
             {
                 await Connection.SendAsync(Contract.SendMessage, envelope.User, envelope.Message);
             }
-
-            Semaphore.Release();
-        });
+        }
     }
 }
