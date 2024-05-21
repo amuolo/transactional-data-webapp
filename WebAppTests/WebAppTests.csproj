@@ -28,7 +28,6 @@
   <ItemGroup>
     <ProjectReference Include="..\App\App.csproj" />
     <ProjectReference Include="..\Posting\Posting.csproj" />
-    <ProjectReference Include="..\TransactionalData\Model.csproj" />
   </ItemGroup>
 
 </Project>
